@@ -1,0 +1,28 @@
+{
+  "name": "chat-v1",
+  "author": "bandvov",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "chat react, nodejs and socket.io",
+  "keywords": [
+    "chat",
+    "react",
+    "nodejs",
+    "node.js",
+    "mongoose",
+    "socket.io",
+    "jwt",
+    "sha256",
+    "MERN"
+  ],
+  "scripts": {
+    "start-server": "cd server && yarn start",
+    "start-client": "cd chat-client && yarn start",
+    "start-dev-server": "cd server && yarn watch",
+    "install:client": "cd chat-client && yarn install",
+    "install:server": "cd server && yarn install",
+    "server:build": "cd server && yarn tsc",
+    "postinstall": "run-p install:*"
+  },
+  "license": "ISC"
+}
