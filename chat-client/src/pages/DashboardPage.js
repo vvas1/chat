@@ -61,6 +61,7 @@ function DashboardPage({ socket }) {
   useEffect(() => {
     getChatrooms();
   }, []);
+
   useEffect(() => {
     if (socket) {
       socket.on("newMessage", (data) => {
@@ -103,6 +104,10 @@ function DashboardPage({ socket }) {
       )
       .then((res) => {
         setRoomName("");
+        socket.emit("newRoomCreated");
+        socket.on("newRoomCreated", () => {
+          getChatrooms();
+        });
         Swal.fire("success", res.data.message);
       })
       .catch((e) => {
