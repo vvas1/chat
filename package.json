@@ -20,9 +20,7 @@
     "start-client": "cd chat-client && yarn start",
     "start-dev-server": "cd server && yarn watch",
     "install:client": "cd chat-client && yarn install",
-    "install:server": "cd server && yarn install",
-    "server:build": "cd server && yarn tsc",
-    "postinstall": "run-p install:*"
-  },
+    "install:server": "cd server && yarn install"
+   },
   "license": "ISC"
 }

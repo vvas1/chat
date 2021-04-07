@@ -21,7 +21,7 @@ mongoose.connect(
     useCreateIndex: true,
     useNewUrlParser: true,
   },
-  (err:{message?: string, status?:number}) => {
+  (err) => {
     if (err) {
       console.log("Mongoose connection error", err.message);
     }
@@ -42,7 +42,7 @@ next();
 io.on('connect', (socket)=>{
   console.log('connect');
 // event with sending error
-  socket.on('joinRoom', async({userName,chatroomId}:MessageData, callback) => {
+  socket.on('joinRoom', async({userName,chatroomId}, callback) => {
     const user = socket.userId
     const chatroomExist = await Chatroom.findById(chatroomId)
 const isMember = chatroomExist.members.includes(user)
@@ -66,7 +66,7 @@ const isMember = chatroomExist.members.includes(user)
         io.to(chatroomId).emit('newMessage', {text: userName + ' joined the room ' + chatroomId})
       }
     })
-    socket.on('chatroomMessage', async({chatroomId, message}: MessageData, callback)=>{
+    socket.on('chatroomMessage', async({chatroomId, message}, callback)=>{
       const chatMessageToSave = {
         text: message,
         user: socket.userId,
@@ -76,7 +76,7 @@ const isMember = chatroomExist.members.includes(user)
       const {savedMessage, error} = await  saveMessage(chatMessageToSave);
       
       if (error){
-      callback(error)
+     callback(error)
       }
       if(savedMessage){
         io.to(chatroomId).emit('newMessage', savedMessage);

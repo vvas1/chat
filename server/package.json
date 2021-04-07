@@ -15,9 +15,10 @@
   ],
   "main": "server.js",
   "scripts": {
-    "start": "node ./dist/server.js",
-    "watch": "ts-node-dev --respawn --transpile-only server.ts",
-    "tsc": "npx tsc"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+    // "watch": "ts-node-dev --respawn --transpile-only server.ts"
+  
   },
   "author": "bandvov",
   "license": "ISC",
@@ -35,9 +36,7 @@
     "socket.io": "^4.0.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.11",
     "gitmoji-cli": "^3.3.1",
-    "ts-node-dev": "^1.1.6",
-    "typescript": "^4.2.3"
+    "ts-node-dev": "^1.1.6"
   }
 }

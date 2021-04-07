@@ -1,5 +1,5 @@
-module.exports.catchErrors = (fn) => (req, res, next): string  => {
-  return fn(req, res, next).catch((error: string) => {
+module.exports.catchErrors = (fn) => (req, res, next)  => {
+  return fn(req, res, next).catch((error) => {
     if (typeof error === "string") {      
       res.status(400).json({ message: error });
     }
@@ -7,20 +7,16 @@ module.exports.catchErrors = (fn) => (req, res, next): string  => {
   });
 };
 
-module.exports.mongooseError = (err: {errors: string[]}, req, res, next) => {
+module.exports.mongooseError = (err, req, res, next) => {
   if (!err.errors) return next(err);
   const errorKeys = Object.keys(err.errors);
   let message = "";
-  errorKeys.forEach((key: string) => (message += err.errors[key].message + ", "));
+  errorKeys.forEach((key) => (message += err.errors[key].message + ", "));
   message = message.substr(0, message.length - 2);
   res.status(400).json({ message });
 };
 
-module.exports.productionError = (err:
-{
-  message: string,
-  status:number
-}, req, res, next) => {
+module.exports.productionError = (err, req, res, next) => {
   if (err) {
     console.log("err", err);
     res

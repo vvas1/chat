@@ -1,4 +1,4 @@
-const Chatroom = require('./models/Chatroom');
+// const Chatroom = require('./models/Chatroom');
 
 // const users = [];
 
@@ -34,5 +34,5 @@ const Chatroom = require('./models/Chatroom');
 
 // const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
-module.exports = { addUser, removeUser, getUser, getUsersInRoom };
+// module.exports = { addUser, removeUser, getUser, getUsersInRoom };
 

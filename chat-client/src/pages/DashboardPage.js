@@ -111,7 +111,6 @@ function DashboardPage({ socket }) {
   };
 
   document.addEventListener("keyup", (e) => {
-    console.log("target name", e.target.name);
     if (e.key === "Escape") {
       setActiveRoomId("");
       setMessages([]);
@@ -119,7 +118,6 @@ function DashboardPage({ socket }) {
   });
 
   const enterHandler = (e) => {
-    console.log(e.key);
     if (e.key === "Enter") {
       sendMessage();
     }
@@ -152,7 +150,14 @@ function DashboardPage({ socket }) {
             <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
           }
           title={listItem.name}
-          description={listItem.text}
+          description={
+            listItem.messages[listItem.messages.length - 1].text.length > 25
+              ? listItem.messages[listItem.messages.length - 1].text.slice(
+                  0,
+                  25
+                ) + "..."
+              : ""
+          }
         />
       </Card>
     );
@@ -244,11 +249,27 @@ function DashboardPage({ socket }) {
           <div
             style={{
               padding: "1rem",
-              border: "1px solid brown",
+              borderBottom: "1px solid red",
             }}
           >
             <h4>{activeRoomName}</h4>
-            <h5>{"Online: " + socket?.connected}</h5>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <h5>{"Online: "}</h5>
+              <div
+                style={{
+                  backgroundColor: socket?.connected ? "green" : "red",
+                  width: "10px",
+                  height: "10px",
+                  margin: "0 5px 5px",
+                  borderRadius: "50%",
+                }}
+              ></div>
+            </div>
           </div>
           <div style={{ overflow: "auto", height: "60vh" }}>
             <div>{mappedMessages}</div>
@@ -287,10 +308,10 @@ function DashboardPage({ socket }) {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Input
+        {activeRoomId && <Input
           onChange={(e) => setRoomName(e.target.value)}
           placeholder="Chatroom name..."
-        />
+        />}
       </Modal>
     </div>
   ) : (
