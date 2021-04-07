@@ -128,6 +128,13 @@ function DashboardPage({ socket }) {
     setVisible(false);
   };
   const mappedList = chatrooms?.map((listItem) => {
+    const description =
+      listItem.messages &&
+      listItem.messages[listItem.messages.length - 1]?.text.length > 25
+        ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
+          "..."
+        : listItem.messages[listItem.messages.length - 1]?.text;
+
     return (
       <Card
         key={listItem._id}
@@ -150,15 +157,8 @@ function DashboardPage({ socket }) {
             <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
           }
           title={listItem.name}
-          description={
-            listItem.messages[listItem.messages.length - 1].text.length > 25
-              ? listItem.messages[listItem.messages.length - 1].text.slice(
-                  0,
-                  25
-                ) + "..."
-              : ""
-          }
         />
+        {description}
       </Card>
     );
   });
@@ -252,7 +252,7 @@ function DashboardPage({ socket }) {
               borderBottom: "1px solid red",
             }}
           >
-            <h4>{activeRoomName}</h4>
+            <h4>{activeRoomId ? activeRoomName : ""}</h4>
             <div
               style={{
                 display: "flex",
@@ -274,32 +274,34 @@ function DashboardPage({ socket }) {
           <div style={{ overflow: "auto", height: "60vh" }}>
             <div>{mappedMessages}</div>
           </div>
-          <div
-            style={{
-              bottom: 0,
-              width: "100%",
-              border: "2px cyan",
-              padding: "2rem 6rem",
-              position: "absolute",
-              backgroundColor: "#fafafa",
-            }}
-          >
-            <Input
-              onKeyUp={(e) => enterHandler(e)}
-              id="send-message"
-              onChange={(e) => setMessageToSend(e.target.value)}
-              size="large"
-              value={messageToSend}
-              allowClear={true}
-              style={{ width: "100%" }}
-              placeholder="Send message..."
-              suffix={
-                <Button onClick={sendMessage}>
-                  <SendOutlined />
-                </Button>
-              }
-            />
-          </div>
+          {activeRoomId && (
+            <div
+              style={{
+                bottom: 0,
+                width: "100%",
+                border: "2px cyan",
+                padding: "2rem 6rem",
+                position: "absolute",
+                backgroundColor: "#fafafa",
+              }}
+            >
+              <Input
+                onKeyUp={(e) => enterHandler(e)}
+                id="send-message"
+                onChange={(e) => setMessageToSend(e.target.value)}
+                size="large"
+                value={messageToSend}
+                allowClear={true}
+                style={{ width: "100%" }}
+                placeholder="Send message..."
+                suffix={
+                  <Button onClick={sendMessage}>
+                    <SendOutlined />
+                  </Button>
+                }
+              />
+            </div>
+          )}
         </div>
       </div>
       <Modal
@@ -308,10 +310,12 @@ function DashboardPage({ socket }) {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        {activeRoomId && <Input
-          onChange={(e) => setRoomName(e.target.value)}
-          placeholder="Chatroom name..."
-        />}
+        {
+          <Input
+            onChange={(e) => setRoomName(e.target.value)}
+            placeholder="Chatroom name..."
+          />
+        }
       </Modal>
     </div>
   ) : (
