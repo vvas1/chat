@@ -3,7 +3,7 @@ module.exports.validateName = (req, res, next) => {
     const nameRegex = /[a-zA-Z\s]+/;
     if (!nameRegex.test(req.body.name)) throw "Chatroom name is not provided";
     next();
-  } catch (e:unknown) {
+  } catch (e) {
     res.status(400).json({ message: e });
   }
 };
@@ -13,7 +13,7 @@ module.exports.validateEmail = (req, res, next) => {
     if (!emailRegex.test(req.body.email))
       throw "Email is not supported from your domain";
     next();
-  } catch (e:unknown) {
+  } catch (e) {
     res.status(400).json({ message: e });
   }
 };
@@ -24,7 +24,7 @@ module.exports.validatePassword = (req, res, next) => {
       throw "Password should have minimum 6 characters";
     }
     next()
-  } catch (e: unknown) {
+  } catch (e) {
    res.status(400).json({ message: e });
   }
 };

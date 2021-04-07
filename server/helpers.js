@@ -1,6 +1,5 @@
 const Message = require("./models/Message");
-const Chatroom = require('./models//Chatroom');
-
+const Chatroom = require('./models/Chatroom');
 // save message to database
 const saveMessage = async ({ user, chatroom, text }) => {
   

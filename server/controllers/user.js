@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { validateEmail, validatePassword } = require("../midlware/validators");
 
 module.exports.register = async (req, res) => {
-  const { name, email, password }: Body = req.body;
+  const { name, email, password } = req.body;
 
   const foundUser = await User.findOne({ email });
   if (foundUser) throw "User already exist";
@@ -18,7 +18,7 @@ module.exports.register = async (req, res) => {
 };
 
 module.exports.login = async (req, res) => {
-  const { email, password }: Body = req.body;
+  const { email, password } = req.body;
   const user = await User.findOne({
     email,
     password: sha256(password + process.env.SALT),
