@@ -18,9 +18,11 @@
   "scripts": {
     "start-server": "cd server && yarn start",
     "start-client": "cd chat-client && yarn start",
-    "start-dev-server": "cd server && yarn watch",
+    "start-dev-server": "cd server && yarn dev",
     "install:client": "cd chat-client && yarn install",
-    "install:server": "cd server && yarn install"
-   },
+    "install:server": "cd server && yarn install",
+    "up": "docker-compose up -d",
+    "down": "docker-compose down"
+  },
   "license": "ISC"
 }
