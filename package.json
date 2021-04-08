@@ -22,7 +22,8 @@
     "install:client": "cd chat-client && yarn install",
     "install:server": "cd server && yarn install",
     "up": "docker-compose up -d",
-    "down": "docker-compose down"
+    "down": "docker-compose down",
+    "start":  ""
   },
   "license": "ISC"
 }
