@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
 import axios from "axios";
 import { SendOutlined } from "@ant-design/icons";
-import { Modal, Button, Card, Input } from "antd";
+import { Modal, Button, Card, Input, notification } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import Meta from "antd/lib/card/Meta";
 import Search from "antd/lib/input/Search";
 import { ROUTES } from "../configs/routes";
-import Swal from "sweetalert2";
 
 const userId = localStorage.getItem("userId");
 const token = localStorage.getItem("token");
@@ -54,7 +53,12 @@ function DashboardPage({ socket }) {
         setChatrooms(res.data.chatrooms);
       })
       .catch((err) => {
-        Swal.fire("error", err.response?.data);
+        notification.open({
+          message: err.response?.data,
+          onClick: () => {
+            console.log("Notification Clicked!");
+          },
+        });
       });
   };
 
@@ -108,16 +112,18 @@ function DashboardPage({ socket }) {
         socket.on("newRoomCreated", () => {
           getChatrooms();
         });
-        Swal.fire("success", res.data.message);
+        notification.open({ message: res.data.message });
       })
       .catch((e) => {
-        Swal.fire("error", e.response.data.message);
+        setRoomName("");
+        notification.open({ message: e.response.data.message });
       });
   };
 
   document.addEventListener("keyup", (e) => {
     if (e.key === "Escape") {
       setActiveRoomId("");
+      setActiveRoomName("");
       setMessages([]);
     }
   });
@@ -130,6 +136,7 @@ function DashboardPage({ socket }) {
 
   const handleCancel = () => {
     console.log("Clicked cancel button");
+    setRoomName("");
     setVisible(false);
   };
   const mappedList = chatrooms?.map((listItem) => {
@@ -257,7 +264,7 @@ function DashboardPage({ socket }) {
               borderBottom: "1px solid red",
             }}
           >
-            <h4>{activeRoomId ? activeRoomName : ""}</h4>
+            <h4>{activeRoomName ? activeRoomName : ""}</h4>
             <div
               style={{
                 display: "flex",

@@ -1,22 +1,31 @@
 import React from "react";
-import { Form, Input, Button } from "antd";
-import { Link, Redirect } from "react-router-dom";
+import { Form, Input, Button, notification } from "antd";
+import { Link, withRouter } from "react-router-dom";
 import "../styles/login.css";
 import axios from "axios";
-import Swal from "sweetalert2";
+
 import { ROUTES } from "../configs/routes";
 
-const RegisterPage = () => {
+const RegisterPage = ({ history }) => {
   const onFinish = async (userData) => {
     await axios
       .post(ROUTES.register, userData)
       .then((res) => {
-        Swal.fire({ icon: "success", text: res.data.message });
-        return <Redirect to="/login" />;
+        notification.open({
+          message: res.data.message,
+          onClose: () => {
+            history.push("/");
+          },
+        });
       })
       .catch((e) => {
         if (e) {
-          Swal.fire({ icon: "error", text: e.response?.data.message });
+          notification.open({
+            message: e.response?.data.message,
+            onClose: () => {
+              history.push("/");
+            },
+          });
         }
       });
   };
@@ -120,4 +129,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default withRouter(RegisterPage);
