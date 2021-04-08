@@ -1,13 +1,12 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, Space } from "antd";
+import { Form, Input, Button, Checkbox, Space, notification } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import "../styles/login.css";
 import axios from "axios";
-import Swal from "sweetalert2";
 import { ROUTES } from "../configs/routes";
 
-const LoginPage = () => {
+const LoginPage = (props) => {
   const onFinish = async (userData) => {
     await axios
       .post(ROUTES.login, userData)
@@ -15,11 +14,18 @@ const LoginPage = () => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userName", res.data.name);
         localStorage.setItem("userId", res.data.userId);
-        Swal.fire({ icon: "success", text: res.data.message });
+
+        notification.open({
+          message: res.data.message,
+          onClose: () => {
+            props.history.push("/");
+          },
+        });
       })
       .catch((e) => {
         if (e) {
-          Swal.fire({ icon: "error", text: e.response?.data.message });
+          notification.open({ message: e.response?.data.message });
+          return;
         }
       });
   };
@@ -98,4 +104,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default withRouter(LoginPage);
