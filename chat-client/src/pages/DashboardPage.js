@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
 import axios from "axios";
 import { SendOutlined } from "@ant-design/icons";
-import { Modal, Button, Card, Input } from "antd";
+import { Modal, Button, Card, Input, notification } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import Meta from "antd/lib/card/Meta";
 import Search from "antd/lib/input/Search";
 import { ROUTES } from "../configs/routes";
-import Swal from "sweetalert2";
 
 const userId = localStorage.getItem("userId");
 const token = localStorage.getItem("token");
@@ -54,13 +53,19 @@ function DashboardPage({ socket }) {
         setChatrooms(res.data.chatrooms);
       })
       .catch((err) => {
-        Swal.fire("error", err.response?.data);
+        notification.open({
+          message: err.response?.data,
+          onClick: () => {
+            console.log("Notification Clicked!");
+          },
+        });
       });
   };
 
   useEffect(() => {
     getChatrooms();
   }, []);
+
   useEffect(() => {
     if (socket) {
       socket.on("newMessage", (data) => {
@@ -80,7 +85,6 @@ function DashboardPage({ socket }) {
           }
         }
       );
-      setMessages((messages) => (messages = []));
       return () => {
         socket.emit("leaveRoom", { chatroomId: previosRoomId });
       };
@@ -103,16 +107,22 @@ function DashboardPage({ socket }) {
       )
       .then((res) => {
         setRoomName("");
-        Swal.fire("success", res.data.message);
+        socket.emit("newRoomCreated");
+        socket.on("newRoomCreated", () => {
+          getChatrooms();
+        });
+        notification.open({ message: res.data.message });
       })
       .catch((e) => {
-        Swal.fire("error", e.response.data.message);
+        setRoomName("");
+        notification.open({ message: e.response.data.message });
       });
   };
 
   document.addEventListener("keyup", (e) => {
     if (e.key === "Escape") {
       setActiveRoomId("");
+      setActiveRoomName("");
       setMessages([]);
     }
   });
@@ -125,9 +135,17 @@ function DashboardPage({ socket }) {
 
   const handleCancel = () => {
     console.log("Clicked cancel button");
+    setRoomName("");
     setVisible(false);
   };
   const mappedList = chatrooms?.map((listItem) => {
+    const description =
+      listItem.messages &&
+      listItem.messages[listItem.messages.length - 1]?.text.length > 25
+        ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
+          "..."
+        : listItem.messages[listItem.messages.length - 1]?.text;
+
     return (
       <Card
         key={listItem._id}
@@ -141,6 +159,7 @@ function DashboardPage({ socket }) {
           if (activeRoomId === listItem._id) return;
           setPreviousRoomId(activeRoomId);
           setActiveRoomId(listItem._id);
+          setMessages(listItem.messages);
           setActiveRoomName(listItem.name);
         }}
       >
@@ -150,15 +169,8 @@ function DashboardPage({ socket }) {
             <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
           }
           title={listItem.name}
-          description={
-            listItem.messages[listItem.messages.length - 1].text.length > 25
-              ? listItem.messages[listItem.messages.length - 1].text.slice(
-                  0,
-                  25
-                ) + "..."
-              : ""
-          }
         />
+        {description}
       </Card>
     );
   });
@@ -252,7 +264,7 @@ function DashboardPage({ socket }) {
               borderBottom: "1px solid red",
             }}
           >
-            <h4>{activeRoomName}</h4>
+            <h4>{activeRoomName ? activeRoomName : ""}</h4>
             <div
               style={{
                 display: "flex",
@@ -274,32 +286,34 @@ function DashboardPage({ socket }) {
           <div style={{ overflow: "auto", height: "60vh" }}>
             <div>{mappedMessages}</div>
           </div>
-          <div
-            style={{
-              bottom: 0,
-              width: "100%",
-              border: "2px cyan",
-              padding: "2rem 6rem",
-              position: "absolute",
-              backgroundColor: "#fafafa",
-            }}
-          >
-            <Input
-              onKeyUp={(e) => enterHandler(e)}
-              id="send-message"
-              onChange={(e) => setMessageToSend(e.target.value)}
-              size="large"
-              value={messageToSend}
-              allowClear={true}
-              style={{ width: "100%" }}
-              placeholder="Send message..."
-              suffix={
-                <Button onClick={sendMessage}>
-                  <SendOutlined />
-                </Button>
-              }
-            />
-          </div>
+          {activeRoomId && (
+            <div
+              style={{
+                bottom: 0,
+                width: "100%",
+                border: "2px cyan",
+                padding: "2rem 6rem",
+                position: "absolute",
+                backgroundColor: "#fafafa",
+              }}
+            >
+              <Input
+                onKeyUp={(e) => enterHandler(e)}
+                id="send-message"
+                onChange={(e) => setMessageToSend(e.target.value)}
+                size="large"
+                value={messageToSend}
+                allowClear={true}
+                style={{ width: "100%" }}
+                placeholder="Send message..."
+                suffix={
+                  <Button onClick={sendMessage}>
+                    <SendOutlined />
+                  </Button>
+                }
+              />
+            </div>
+          )}
         </div>
       </div>
       <Modal
@@ -308,10 +322,12 @@ function DashboardPage({ socket }) {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        {activeRoomId && <Input
-          onChange={(e) => setRoomName(e.target.value)}
-          placeholder="Chatroom name..."
-        />}
+        {
+          <Input
+            onChange={(e) => setRoomName(e.target.value)}
+            placeholder="Chatroom name..."
+          />
+        }
       </Modal>
     </div>
   ) : (

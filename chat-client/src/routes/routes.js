@@ -3,7 +3,6 @@ import io from "socket.io-client";
 import { Route, Switch } from "react-router";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
-import ChatroomPage from "../pages/ChatroomPage";
 import DashboardPage from "../pages/DashboardPage";
 import { ROUTES } from "../configs/routes";
 
@@ -20,7 +19,7 @@ function Routes() {
       newSocket.on("disconnect", () => {
         setSocket(null);
       });
-    
+
       setSocket(newSocket);
     }
   }, [socket]);
@@ -44,11 +43,6 @@ function Routes() {
       <Route
         path={ROUTES.dashboard}
         render={() => <DashboardPage socket={socket} />}
-        exact
-      />
-      <Route
-        path={ROUTES.chatroom}
-        render={() => <ChatroomPage socket={socket} />}
         exact
       />
     </Switch>
