@@ -14,7 +14,7 @@ function Routes() {
 
   const setupSocket = useCallback(() => {
     if (token && !socket) {
-      const newSocket = io(PATH + "/", { query: { token } });
+      const newSocket = io(PATH, { query: { token } });
 
       newSocket.on("disconnect", () => {
         setSocket(null);

@@ -11,7 +11,7 @@ const RegisterPage = ({ history }) => {
     await axios
       .post(ROUTES.register, userData)
       .then((res) => {
-        notification.open({
+        notification.success({
           message: res.data.message,
           onClose: () => {
             history.push("/");
@@ -20,7 +20,7 @@ const RegisterPage = ({ history }) => {
       })
       .catch((e) => {
         if (e) {
-          notification.open({
+          notification.error({
             message: e.response?.data.message,
             onClose: () => {
               history.push("/");

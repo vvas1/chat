@@ -9,13 +9,13 @@ import { ROUTES } from "../configs/routes";
 const LoginPage = (props) => {
   const onFinish = async (userData) => {
     await axios
-      .post(ROUTES.login, userData)
+      .post('http://localhost:5000'+ ROUTES.login, userData)
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userName", res.data.name);
         localStorage.setItem("userId", res.data.userId);
 
-        notification.open({
+        notification.success({
           message: res.data.message,
           onClose: () => {
             props.history.push("/");
@@ -24,7 +24,7 @@ const LoginPage = (props) => {
       })
       .catch((e) => {
         if (e) {
-          notification.open({ message: e.response?.data.message });
+          notification.error({ message: e.response?.data.message,placement:'bottomRight' });
           return;
         }
       });

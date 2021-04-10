@@ -53,7 +53,7 @@ function DashboardPage({ socket }) {
         setChatrooms(res.data.chatrooms);
       })
       .catch((err) => {
-        notification.open({
+        notification.error({
           message: err.response?.data,
           onClick: () => {
             console.log("Notification Clicked!");
@@ -111,11 +111,11 @@ function DashboardPage({ socket }) {
         socket.on("newRoomCreated", () => {
           getChatrooms();
         });
-        notification.open({ message: res.data.message });
+        notification.success({ message: res.data.message });
       })
       .catch((e) => {
         setRoomName("");
-        notification.open({ message: e.response.data.message });
+        notification.error({ message: e.response.data.message });
       });
   };
 
