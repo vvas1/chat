@@ -45,4 +45,4 @@ const addUserToRoom = async ({ chatroomId, user }) => {
   return { isMember };
 };
 
-module.exports = { saveMessage, addUserToRoom, getChatroomMessages };
+module.exports = { saveMessage, addUserToRoom };
