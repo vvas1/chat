@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 require("dotenv").config({});
 const server = require("http").createServer(app);
 const jwt = require("jsonwebtoken");
-const User = require("./models/User");
-const Message = require("./models/Message");
-const Chatroom = require("./models/Chatroom");
 const PORT = process.env.PORT || 3000;
-const { saveMessage } = require("./helpers");
+const {
+  saveMessage,
+  addUserToRoom,
+} = require("./helpers");
 
 const io = require("socket.io")(server, {
   cors: {
@@ -46,33 +46,22 @@ io.on("connect", (socket) => {
   // event with sending error
   socket.on("joinRoom", async ({ userName, chatroomId }, callback) => {
     const user = socket.userId;
-    const chatroomExist = await Chatroom.findById(chatroomId);
-    const isMember = chatroomExist.members.includes(user);
-
-    if (!chatroomExist) {
-      callback({ error: "Room does not exist" });
-    }
-    if (chatroomId) {
-      await Chatroom.updateOne(
-        { _id: chatroomId },
-        {
-          $addToSet: {
-            members: user,
-          },
-        }
-      );
+    const { isMember, error } = await addUserToRoom({
+      chatroomId,
+      user,
+    });
+    if (error) {
+      callback(error);
     }
 
     socket.join(chatroomId);
     if (!isMember) {
-      console.log("isMember", isMember);
-
       socket.emit("newMessage", { text: "Welcome " + userName });
       io.to(chatroomId).emit("newMessage", {
         text: userName + " joined the room " + chatroomId,
       });
     }
-  });
+ });
   socket.on("chatroomMessage", async ({ chatroomId, message }, callback) => {
     const chatMessageToSave = {
       text: message,
