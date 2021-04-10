@@ -79,7 +79,7 @@ io.on("connect", (socket) => {
     }
   });
   socket.on("newRoomCreated", () => {
-    io.emit("newRoomCreated");
+    socket.emit("newRoomCreated");
   });
 });
 

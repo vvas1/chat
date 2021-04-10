@@ -6,7 +6,7 @@ module.exports.createChatroom = async (req, res) => {
   const chatRoomExist = await Chatroom.findOne({ name });
   if (chatRoomExist) throw "Chatroom with that name already exist";
 
-  const chatRoom = new Chatroom({ name, owner });
+  const chatRoom = new Chatroom({ name, owner, members: [owner] });
   await chatRoom.save();
   res.status(200).json({ message: `ChatRoom ${name} successfully created` });
 };
