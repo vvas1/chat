@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
 import axios from "axios";
-import { SendOutlined } from "@ant-design/icons";
+import { MoreOutlined, SendOutlined } from "@ant-design/icons";
 import { Modal, Button, Card, Input, notification } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import Meta from "antd/lib/card/Meta";
@@ -60,6 +60,37 @@ function DashboardPage({ socket }) {
         });
       });
   };
+  const deleteRoomHandler = async () => {
+    if (activeRoomId) {
+      console.log("here");
+      await axios
+        .delete(PATH + "/delete-room", {
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          data: { id: activeRoomId },
+        })
+        .then((res) => {
+          socket.emit("roomDeleted");
+          setMessages([]);
+          notification.success({
+            message: res.data.message,
+            onClick: () => {
+              console.log("Notification Clicked!");
+            },
+          });
+        })
+        .catch((err) => {
+          notification.error({
+            message: err.response?.data,
+            onClick: () => {
+              console.log("Notification Clicked!");
+            },
+          });
+        });
+    }
+  };
 
   useEffect(() => {
     getChatrooms();
@@ -80,10 +111,14 @@ function DashboardPage({ socket }) {
         { chatroomId: activeRoomId, userName: name },
         (error) => {
           if (error) {
+            notification.error({ message: error?.response?.data?.message });
             throw error;
           }
         }
       );
+      socket.on("roomDeleted", () => {
+        getChatrooms();
+      });
       return () => {
         socket.emit("leaveRoom", { chatroomId: previosRoomId });
       };
@@ -115,6 +150,7 @@ function DashboardPage({ socket }) {
       .catch((e) => {
         setRoomName("");
         notification.error({ message: e.response.data.message });
+        throw e.response.data.message;
       });
   };
 
@@ -137,15 +173,16 @@ function DashboardPage({ socket }) {
     setRoomName("");
     setVisible(false);
   };
-  console.log('rooms',chatrooms);
+  console.log("rooms", chatrooms);
   const mappedList = chatrooms?.map((listItem) => {
-    const description =
-      listItem &&
-      listItem.messages &&
-      listItem.messages[listItem.messages.length - 1]?.text.length > 25
-        ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
-          "..."
-        : listItem.messages[listItem.messages.length - 1]?.text;
+    let description = "";
+    if (listItem.messages) {
+      description =
+        listItem.messages[listItem.messages.length - 1]?.text.length > 25
+          ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
+            "..."
+          : listItem.messages[listItem.messages.length - 1]?.text;
+    }
 
     return (
       <Card
@@ -214,12 +251,35 @@ function DashboardPage({ socket }) {
           padding: ".5rem",
           border: "1px solid green",
           display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        DashboardPage{" "}
-        <Button onClick={() => setVisible(true)} type="primary">
-          create room
-        </Button>
+        <div>
+          DashboardPage{" "}
+          <Button
+            style={{ margin: "0 1rem" }}
+            onClick={() => setVisible(true)}
+            type="primary"
+          >
+            Create room
+          </Button>
+          {activeRoomId && (
+            <Button onClick={() => deleteRoomHandler()} type="primary">
+              Delete room
+            </Button>
+          )}
+        </div>
+        <div style={{ fontSize: "1rem" }}>
+          {name}
+          <MoreOutlined
+            style={{
+              margin: "0 0 0 2rem",
+              padding: "0.5rem",
+              cursor: "pointer",
+            }}
+          />
+        </div>
       </div>
       <div style={{ display: "flex" }}>
         <div

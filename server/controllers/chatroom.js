@@ -25,3 +25,12 @@ module.exports.getAllChatrooms = async (req, res) => {
 
   return res.status(200).json({ chatrooms });
 };
+
+module.exports.deleteRoom = async (req, res) => {
+  const { id } = req.body;
+  const room = await Chatroom.findByIdAndDelete(id);
+  if (!room) {
+    return res.status(404).json({ message: "Room not found" });
+  }
+  return res.status(200).json({ message: "Room successfully deleted" });
+};

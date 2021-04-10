@@ -27,9 +27,11 @@ module.exports.saveMessage = async ({ user, chatroom, text }) => {
 // add user to chat room
 module.exports.addUserToRoom = async ({ chatroomId, user }) => {
   const foundChatRoom = await Chatroom.findById(chatroomId);
+  if (!foundChatRoom) {
+    return { error: "Room does not exist" };
+  }
   const isMember = foundChatRoom.members.includes(user);
-
-  const updatedChatroom = await Chatroom.updateOne(
+  await Chatroom.updateOne(
     { _id: chatroomId },
     {
       $addToSet: {
@@ -37,8 +39,5 @@ module.exports.addUserToRoom = async ({ chatroomId, user }) => {
       },
     }
   );
-  if (!updatedChatroom) {
-    return { error: "Room does not exist" };
-  }
   return { isMember };
 };
