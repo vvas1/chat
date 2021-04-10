@@ -6,11 +6,10 @@ import { Modal, Button, Card, Input, notification } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import Meta from "antd/lib/card/Meta";
 import Search from "antd/lib/input/Search";
-import { ROUTES } from "../configs/routes";
+import { ROUTES, PATH } from "../configs/routes";
 
 const userId = localStorage.getItem("userId");
 const token = localStorage.getItem("token");
-const PATH = "http://localhost:5000";
 const name = localStorage.getItem("userName");
 
 function DashboardPage({ socket }) {
@@ -138,8 +137,10 @@ function DashboardPage({ socket }) {
     setRoomName("");
     setVisible(false);
   };
+  console.log('rooms',chatrooms);
   const mappedList = chatrooms?.map((listItem) => {
     const description =
+      listItem &&
       listItem.messages &&
       listItem.messages[listItem.messages.length - 1]?.text.length > 25
         ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
