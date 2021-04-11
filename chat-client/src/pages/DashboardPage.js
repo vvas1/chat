@@ -175,28 +175,31 @@ function DashboardPage({ socket }) {
     setRoomName("");
     setVisible(false);
   };
-  console.log("rooms", chatrooms);
   const mappedList = chatrooms?.map((listItem) => {
     let description = "";
+    const sliceLength = 20;
     if (listItem.messages) {
       description =
-        listItem.messages[listItem.messages.length - 1]?.text.length > 25
-          ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
-            "..."
+        listItem.messages[listItem.messages.length - 1]?.text.length >
+        sliceLength
+          ? listItem.messages[listItem.messages.length - 1]?.text.slice(
+              0,
+              sliceLength
+            ) + "..."
           : listItem.messages[listItem.messages.length - 1]?.text;
     }
-
+    const isActiveRoom = activeRoomId === listItem._id;
     return (
       <Card
         key={listItem._id}
         style={{
-          marginTop: 16,
+          margin: "1rem 1rem 0",
           border: "1px solid blue",
-          backgroundColor:
-            activeRoomId === listItem._id ? "rgba(0,0,0,0.06)" : "",
+          backgroundColor: isActiveRoom ? "rgba(0,0,0,0.06)" : "",
+          borderLeft: isActiveRoom ? "3px solid blue" : "",
         }}
         onClick={() => {
-          if (activeRoomId === listItem._id) return;
+          if (isActiveRoom) return;
           setPreviousRoomId(activeRoomId);
           setActiveRoomId(listItem._id);
           setMessages(listItem.messages);
@@ -258,7 +261,8 @@ function DashboardPage({ socket }) {
         }}
       >
         <div>
-          DashboardPage{" "}
+          {" "}
+          Dashboard{" "}
           <Button
             style={{ margin: "0 1rem" }}
             onClick={() => setVisible(true)}
@@ -272,11 +276,11 @@ function DashboardPage({ socket }) {
             </Button>
           )}
         </div>
-        <div style={{ fontSize: "1rem" }}>
-          {name}
+        <div style={{ fontSize: "1rem", display: "inline-block" }}>
+          <h>{name}</h>
           <MoreOutlined
             style={{
-              margin: "0 0 0 2rem",
+              margin: "0 0 0 1rem",
               padding: "0.5rem",
               cursor: "pointer",
             }}
@@ -289,13 +293,17 @@ function DashboardPage({ socket }) {
           style={{
             flexBasis: "30%",
             height: "90vh",
-            padding: "1rem",
+            padding: "1rem 0 0 0",
             border: "1px solid green",
             backgroundColor: "#fafafa",
             overflow: "hidden",
           }}
         >
-          <div>
+          <div
+            style={{
+              padding: `0 ${chatrooms.length >= 6 ? 1.3 : 1}rem 0 1rem`,
+            }}
+          >
             <Search
               bordered={true}
               placeholder="input search text"
@@ -389,6 +397,7 @@ function DashboardPage({ socket }) {
           <Input
             onChange={(e) => setRoomName(e.target.value)}
             placeholder="Chatroom name..."
+            value={roomName}
           />
         }
       </Modal>

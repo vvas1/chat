@@ -77,7 +77,8 @@ io.on("connect", (socket) => {
     }
   });
   socket.on("newRoomCreated", () => {
-    socket.emit("newRoomCreated");
+    // socket.emit("newRoomCreated");
+    io.emit("newRoomCreated");
   });
   socket.on("roomDeleted", () => {
     io.emit("roomDeleted");
