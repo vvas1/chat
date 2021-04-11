@@ -30,7 +30,10 @@ module.exports.addUserToRoom = async ({ chatroomId, user }) => {
   if (!foundChatRoom) {
     return { error: "Room does not exist" };
   }
-  const isMember = foundChatRoom.members.includes(user);
+  const isMember = await Chatroom.find({
+    _id: chatroomId,
+    members: { $in: [user] },
+  });
   await Chatroom.updateOne(
     { _id: chatroomId },
     {
@@ -39,5 +42,5 @@ module.exports.addUserToRoom = async ({ chatroomId, user }) => {
       },
     }
   );
-  return { isMember };
+  return { isMember: isMember.length ? true : false };
 };

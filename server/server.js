@@ -51,7 +51,6 @@ io.on("connect", (socket) => {
     if (error) {
       callback(error);
     }
-    if (isMember) return;
 
     socket.join(chatroomId);
     if (!isMember) {
