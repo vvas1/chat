@@ -74,6 +74,8 @@ function DashboardPage({ socket }) {
         .then((res) => {
           socket.emit("roomDeleted");
           setMessages([]);
+          setActiveRoomName("");
+          setActiveRoomId("");
           notification.success({
             message: res.data.message,
             onClick: () => {

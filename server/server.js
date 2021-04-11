@@ -14,6 +14,7 @@ const io = require("socket.io")(server, {
 
 mongoose.connect(
   process.env.MONGO_URL,
+  // process.env.LOCAL_MONGO_URL,
   {
     useUnifiedTopology: true,
     useFindAndModify: false,
@@ -50,6 +51,7 @@ io.on("connect", (socket) => {
     if (error) {
       callback(error);
     }
+    if (isMember) return;
 
     socket.join(chatroomId);
     if (!isMember) {
