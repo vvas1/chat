@@ -276,8 +276,8 @@ function DashboardPage({ socket }) {
             </Button>
           )}
         </div>
-        <div style={{ fontSize: "1rem", display: "inline-block" }}>
-          <h>{name}</h>
+        <div style={{ fontSize: "1rem", display: "inline-flex" }}>
+          <h5>{name}</h5>
           <MoreOutlined
             style={{
               margin: "0 0 0 1rem",
