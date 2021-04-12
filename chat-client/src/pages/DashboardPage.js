@@ -276,8 +276,22 @@ function DashboardPage({ socket }) {
             </Button>
           )}
         </div>
-        <div style={{ fontSize: "1rem", display: "inline-flex" }}>
-          <h5>{name}</h5>
+        <div
+          style={{
+            fontSize: "1rem",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          <h5>
+            {name}
+            <style jsx>{`
+              h5:hover {
+                cursor: pointer;
+                color: blue;
+              }
+            `}</style>
+          </h5>
           <MoreOutlined
             style={{
               margin: "0 0 0 1rem",
