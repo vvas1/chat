@@ -11,12 +11,13 @@
     "node.js",
     "mongoose",
     "socket.io",
+    "express",
     "jwt",
     "sha256",
     "MERN"
   ],
   "scripts": {
-    "up": "docker-compose up",
+    "start": "docker-compose up",
     "down": "docker-compose down"
   },
   "license": "ISC"
