@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router";
 import axios from "axios";
-import { SendOutlined } from "@ant-design/icons";
+import { MoreOutlined, SendOutlined } from "@ant-design/icons";
 import { Modal, Button, Card, Input, notification } from "antd";
 import Avatar from "antd/lib/avatar/avatar";
 import Meta from "antd/lib/card/Meta";
 import Search from "antd/lib/input/Search";
-import { ROUTES } from "../configs/routes";
+import { ROUTES, PATH } from "../configs/routes";
 
 const userId = localStorage.getItem("userId");
 const token = localStorage.getItem("token");
-const PATH = "http://localhost:5000";
 const name = localStorage.getItem("userName");
 
 function DashboardPage({ socket }) {
@@ -61,6 +60,39 @@ function DashboardPage({ socket }) {
         });
       });
   };
+  const deleteRoomHandler = async () => {
+    if (activeRoomId) {
+      console.log("here");
+      await axios
+        .delete(PATH + "/delete-room", {
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          data: { id: activeRoomId },
+        })
+        .then((res) => {
+          socket.emit("roomDeleted");
+          setMessages([]);
+          setActiveRoomName("");
+          setActiveRoomId("");
+          notification.success({
+            message: res.data.message,
+            onClick: () => {
+              console.log("Notification Clicked!");
+            },
+          });
+        })
+        .catch((err) => {
+          notification.error({
+            message: err.response?.data,
+            onClick: () => {
+              console.log("Notification Clicked!");
+            },
+          });
+        });
+    }
+  };
 
   useEffect(() => {
     getChatrooms();
@@ -81,10 +113,14 @@ function DashboardPage({ socket }) {
         { chatroomId: activeRoomId, userName: name },
         (error) => {
           if (error) {
+            notification.error({ message: error?.response?.data?.message });
             throw error;
           }
         }
       );
+      socket.on("roomDeleted", () => {
+        getChatrooms();
+      });
       return () => {
         socket.emit("leaveRoom", { chatroomId: previosRoomId });
       };
@@ -116,6 +152,7 @@ function DashboardPage({ socket }) {
       .catch((e) => {
         setRoomName("");
         notification.error({ message: e.response.data.message });
+        throw e.response.data.message;
       });
   };
 
@@ -139,24 +176,30 @@ function DashboardPage({ socket }) {
     setVisible(false);
   };
   const mappedList = chatrooms?.map((listItem) => {
-    const description =
-      listItem.messages &&
-      listItem.messages[listItem.messages.length - 1]?.text.length > 25
-        ? listItem.messages[listItem.messages.length - 1]?.text.slice(0, 25) +
-          "..."
-        : listItem.messages[listItem.messages.length - 1]?.text;
-
+    let description = "";
+    const sliceLength = 20;
+    if (listItem.messages) {
+      description =
+        listItem.messages[listItem.messages.length - 1]?.text.length >
+        sliceLength
+          ? listItem.messages[listItem.messages.length - 1]?.text.slice(
+              0,
+              sliceLength
+            ) + "..."
+          : listItem.messages[listItem.messages.length - 1]?.text;
+    }
+    const isActiveRoom = activeRoomId === listItem._id;
     return (
       <Card
         key={listItem._id}
         style={{
-          marginTop: 16,
+          margin: "1rem 1rem 0",
           border: "1px solid blue",
-          backgroundColor:
-            activeRoomId === listItem._id ? "rgba(0,0,0,0.06)" : "",
+          backgroundColor: isActiveRoom ? "rgba(0,0,0,0.06)" : "",
+          borderLeft: isActiveRoom ? "3px solid blue" : "",
         }}
         onClick={() => {
-          if (activeRoomId === listItem._id) return;
+          if (isActiveRoom) return;
           setPreviousRoomId(activeRoomId);
           setActiveRoomId(listItem._id);
           setMessages(listItem.messages);
@@ -213,12 +256,50 @@ function DashboardPage({ socket }) {
           padding: ".5rem",
           border: "1px solid green",
           display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        DashboardPage{" "}
-        <Button onClick={() => setVisible(true)} type="primary">
-          create room
-        </Button>
+        <div>
+          {" "}
+          Dashboard{" "}
+          <Button
+            style={{ margin: "0 1rem" }}
+            onClick={() => setVisible(true)}
+            type="primary"
+          >
+            Create room
+          </Button>
+          {activeRoomId && (
+            <Button onClick={() => deleteRoomHandler()} type="primary">
+              Delete room
+            </Button>
+          )}
+        </div>
+        <div
+          style={{
+            fontSize: "1rem",
+            display: "inline-flex",
+            alignItems: "center",
+          }}
+        >
+          <h5>
+            {name}
+            <style jsx>{`
+              h5:hover {
+                cursor: pointer;
+                color: blue;
+              }
+            `}</style>
+          </h5>
+          <MoreOutlined
+            style={{
+              margin: "0 0 0 1rem",
+              padding: "0.5rem",
+              cursor: "pointer",
+            }}
+          />
+        </div>
       </div>
       <div style={{ display: "flex" }}>
         <div
@@ -226,13 +307,17 @@ function DashboardPage({ socket }) {
           style={{
             flexBasis: "30%",
             height: "90vh",
-            padding: "1rem",
+            padding: "1rem 0 0 0",
             border: "1px solid green",
             backgroundColor: "#fafafa",
             overflow: "hidden",
           }}
         >
-          <div>
+          <div
+            style={{
+              padding: `0 ${chatrooms.length >= 6 ? 1.3 : 1}rem 0 1rem`,
+            }}
+          >
             <Search
               bordered={true}
               placeholder="input search text"
@@ -326,6 +411,7 @@ function DashboardPage({ socket }) {
           <Input
             onChange={(e) => setRoomName(e.target.value)}
             placeholder="Chatroom name..."
+            value={roomName}
           />
         }
       </Modal>

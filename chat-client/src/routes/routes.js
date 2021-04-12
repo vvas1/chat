@@ -4,17 +4,20 @@ import { Route, Switch } from "react-router";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import DashboardPage from "../pages/DashboardPage";
-import { ROUTES } from "../configs/routes";
+import { ROUTES, PATH } from "../configs/routes";
 
 const token = localStorage.getItem("token");
-const PATH = "http://localhost:5000";
 
 function Routes() {
   const [socket, setSocket] = useState(null);
 
   const setupSocket = useCallback(() => {
     if (token && !socket) {
-      const newSocket = io(PATH, { query: { token } });
+      const newSocket = io(PATH, {
+        query: { token },
+        reconnection: true,
+        transports: ["polling", "websocket"],
+      });
 
       newSocket.on("disconnect", () => {
         setSocket(null);

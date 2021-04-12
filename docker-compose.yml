@@ -12,6 +12,8 @@ services:
       - "3000:3000"
     depends_on:
       - server
+    networks:
+      - mern-app  
   server:
     container_name: server
     restart: always
@@ -21,7 +23,24 @@ services:
       - .env
     ports:
       - "5000:5000"
-volumes: 
+    networks:
+      - mern-app
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - mern-app
+    volumes:
+      - mongo-data:/data/db
+networks:
+  mern-app:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local      
   chat-client:
     name: chat-client
   server:

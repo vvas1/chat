@@ -15,8 +15,9 @@
     "sha256",
     "MERN"
   ],
-  "scripts":{
-    "start":"docker-compose up"
-  }, 
+  "scripts": {
+    "up": "docker-compose up",
+    "down": "docker-compose down"
+  },
   "license": "ISC"
 }

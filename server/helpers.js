@@ -2,10 +2,9 @@ const Message = require("./models/Message");
 const Chatroom = require("./models/Chatroom");
 
 // save message to database
-const saveMessage = async ({ user, chatroom, text }) => {
+module.exports.saveMessage = async ({ user, chatroom, text }) => {
   if (!user) return { error: "User ID not provided" };
-  if (!chatroom || !mongoose.isValidObjectId(chatroom))
-    return { error: "Chatroom ID not provided" };
+  if (!chatroom) return { error: "Chatroom ID not provided" };
   if (!text) return { error: "Message text not provided" };
   try {
     const newMessage = {
@@ -25,13 +24,17 @@ const saveMessage = async ({ user, chatroom, text }) => {
     }
   }
 };
-
 // add user to chat room
-const addUserToRoom = async ({ chatroomId, user }) => {
+module.exports.addUserToRoom = async ({ chatroomId, user }) => {
   const foundChatRoom = await Chatroom.findById(chatroomId);
-  const isMember = foundChatRoom.members.includes(user);
-
-  const updatedChatroom = await Chatroom.updateOne(
+  if (!foundChatRoom) {
+    return { error: "Room does not exist" };
+  }
+  const isMember = await Chatroom.find({
+    _id: chatroomId,
+    members: { $in: [user] },
+  });
+  await Chatroom.updateOne(
     { _id: chatroomId },
     {
       $addToSet: {
@@ -39,10 +42,5 @@ const addUserToRoom = async ({ chatroomId, user }) => {
       },
     }
   );
-  if (!updatedChatroom) {
-    return { error: "Room does not exist" };
-  }
-  return { isMember };
+  return { isMember: isMember.length ? true : false };
 };
-
-module.exports = { saveMessage, addUserToRoom };

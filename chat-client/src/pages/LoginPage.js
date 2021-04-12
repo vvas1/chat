@@ -4,12 +4,12 @@ import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Link, withRouter } from "react-router-dom";
 import "../styles/login.css";
 import axios from "axios";
-import { ROUTES } from "../configs/routes";
+import { ROUTES, PATH } from "../configs/routes";
 
 const LoginPage = (props) => {
   const onFinish = async (userData) => {
     await axios
-      .post('http://localhost:5000'+ ROUTES.login, userData)
+      .post(PATH + ROUTES.login, userData)
       .then((res) => {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userName", res.data.name);
@@ -24,8 +24,10 @@ const LoginPage = (props) => {
       })
       .catch((e) => {
         if (e) {
-          notification.error({ message: e.response?.data.message,placement:'bottomRight' });
-          return;
+          notification.error({
+            message: e.response?.data.message,
+            placement: "bottomRight",
+          });
         }
       });
   };

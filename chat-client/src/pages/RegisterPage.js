@@ -4,17 +4,17 @@ import { Link, withRouter } from "react-router-dom";
 import "../styles/login.css";
 import axios from "axios";
 
-import { ROUTES } from "../configs/routes";
+import { ROUTES, PATH } from "../configs/routes";
 
 const RegisterPage = ({ history }) => {
   const onFinish = async (userData) => {
     await axios
-      .post(ROUTES.register, userData)
+      .post(PATH + ROUTES.register, userData)
       .then((res) => {
         notification.success({
           message: res.data.message,
           onClose: () => {
-            history.push("/");
+            history.push("/login");
           },
         });
       })
@@ -22,9 +22,7 @@ const RegisterPage = ({ history }) => {
         if (e) {
           notification.error({
             message: e.response?.data.message,
-            onClose: () => {
-              history.push("/");
-            },
+          
           });
         }
       });
