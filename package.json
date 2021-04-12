@@ -17,7 +17,7 @@
     "MERN"
   ],
   "scripts": {
-    "start": "docker-compose up",
+    "up": "docker-compose up",
     "down": "docker-compose down"
   },
   "license": "ISC"
