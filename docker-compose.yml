@@ -6,8 +6,6 @@ services:
     restart: always
     build:
       context: ./chat-client
-    env_file:
-      - ./chat-client/.env
     ports:
       - "3000:3000"
     depends_on:

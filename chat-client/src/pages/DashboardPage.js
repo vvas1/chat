@@ -196,7 +196,7 @@ function DashboardPage({ socket }) {
           margin: "1rem 1rem 0",
           border: "1px solid blue",
           backgroundColor: isActiveRoom ? "rgba(0,0,0,0.06)" : "",
-          borderLeft: isActiveRoom ? "3px solid blue" : "",
+          borderLeft: isActiveRoom ? "3px solid blue" : "1px solid blue",
         }}
         onClick={() => {
           if (isActiveRoom) return;
@@ -368,7 +368,7 @@ function DashboardPage({ socket }) {
               ></div>
             </div>
           </div>
-          <div style={{ overflow: "auto", height: "60vh" }}>
+          <div style={{ overflow: "auto", height: "70vh" }}>
             <div>{mappedMessages}</div>
           </div>
           {activeRoomId && (
